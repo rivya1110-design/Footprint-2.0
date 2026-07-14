@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  
+  <title>Footprint — Browse Safer</title>
+  <style>
+    :root {
+      --bg:        #1e1220;
+      --bg2:       #2a1a2a;
+      --bg3:       #3b2a3a;
+      --purple:    #cc60c1;
+      --pink:      #ffc6f9;
+      --danger:    #ff6b6b;
+      --safe:      #6bffb8;
+      --text:      #f0d6ee;
+      --muted:     #9a7898;
+      --border:    #4a2a4a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.6;
+    }
+
+    /* Navigation */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 48px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: rgba(30,18,32,0.92);
+      backdrop-filter: blur(10px);
+      z-index: 100;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: "Pixelify Sans", monospace;
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--pink);
+      text-decoration: none;
+    }
+    .nav-logo:hover {
+      color: var(--purple);
+    }
+    .nav-logo img {
+      width: 80px;
+      image-rendering: pixelated;
+    }
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-family: "OCR A Std", monospace;
+      font-size: 18px;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { 
+      color: var(--pink); 
+    }
+    /* Add to Chrome CTA */
+    .nav-cta {
+      background: var(--purple);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 7px 20px;
+      text-align: center;
+      font-family: Marker Felt, fantasy;
+      letter-spacing: 0.08em;
+      font-size: 22px;
+      width: 205px;
+      height: 46px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .nav-cta:hover { opacity: 0.85; }
+
+    /* Hero */
+    .hero {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 100px 24px 80px;
+      text-align: center;
+    }
+    .hero-eyebrow {
+      display: inline-block;
+      background: rgba(204,96,193,0.15);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 16px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--purple);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    .hero h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(40px, 6vw, 72px);
+      font-weight: 700;
+      line-height: 1.1;
+      color: var(--pink);
+      margin-bottom: 20px;
+    }
+    .hero h1 span {
+      color: var(--purple);
+    }
+    .hero p {
+      font-family: "OCR A Std", monospace;
+      font-size: 19px;
+      color: var(--muted);
+      max-width: 560px;
+      margin: 0 auto 40px;
+    }
+    .hero-btns {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    /* -- Add to Chrome Btn -- */
+      .btn-primary {
+      background: var(--purple);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 13px 27px;
+      text-align: center;
+      font-family: Marker Felt, fantasy;
+      letter-spacing: 0.08em;
+      font-size: 22px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .btn-primary:hover { opacity: 0.85; }
+    /* -- What it does Btn -- */
+    .btn-secondary {
+      background: transparent;
+      color: var(--pink);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px 27px;
+      text-align: center;
+      font-family: Marker Felt, fantasy;
+      letter-spacing: 0.08em;
+      font-size: 22px;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      transition: border-color 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--purple); }
+
+    /* Recent scans and downloads card */
+    .demo-wrap {
+      max-width: 760px;
+      margin: 60px auto 0;
+    }
+
+    .demo-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px 24px;
+      text-align: left;
+    }
+
+    .activity-section {
+      width: 100%;
+    }
+
+    .activity-divider {
+      width: 100%;
+      height: 1px;
+      margin: 18px 0;
+      background: var(--border);
+    }
+
+    .demo-label-link {
+      display: inline-block;
+      margin-bottom: 10px;
+      color: var(--muted);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: color 0.2s ease;
+    }
+
+    .demo-label-link:hover {
+      color: var(--pink);
+    }
+
+    .demo-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      color: inherit;
+      text-decoration: none;
+      transition: background-color 0.2s ease;
+    }
+
+    .demo-row:last-child {
+      border-bottom: none;
+    }
+
+    .demo-row:hover {
+      background: rgba(204, 96, 193, 0.06);
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      flex-shrink: 0;
+      border-radius: 50%;
+    }
+
+    .dot.safe {
+      background: var(--safe);
+    }
+
+    .dot.danger {
+      background: var(--danger);
+    }
+
+    .dot.warn {
+      background: #ffb347;
+    }
+
+    .dot.checking {
+      background: var(--purple);
+    }
+
+    .demo-url {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      color: var(--text);
+      font-family: monospace;
+      font-size: 13px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .demo-subtext {
+      display: block;
+      margin-top: 2px;
+      overflow: hidden;
+      color: var(--muted);
+      font-family: "OCR A Std", monospace;
+      font-size: 10px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .demo-badge {
+      flex-shrink: 0;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .badge-safe {
+      background: rgba(107, 255, 184, 0.12);
+      color: var(--safe);
+    }
+
+    .badge-danger {
+      background: rgba(255, 107, 107, 0.12);
+      color: var(--danger);
+    }
+
+    .badge-warn {
+      background: rgba(255, 179, 71, 0.12);
+      color: #ffb347;
+    }
+
+    .badge-checking {
+      background: rgba(204, 96, 193, 0.12);
+      color: var(--purple);
+    }
+
+    .demo-empty {
+      margin: 4px 0;
+      padding: 10px 0;
+      color: var(--muted);
+      font-family: "OCR A Std", monospace;
+      font-size: 12px;
+      font-style: italic;
+    }
+
+    /* Footrpint Features */
+    .features {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 80px 24px;
+    }
+    .section-label {
+      text-align: center;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--purple);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 14px;
+    }
+    .section-title {
+      text-align: center;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(30px, 4vw, 46px);
+      font-weight: 700;
+      color: var(--pink);
+      margin-bottom: 56px;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      gap: 20px;
+    }
+    .feature-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      transition: border-color 0.2s;
+    }
+    .feature-card:hover { border-color: var(--purple); }
+    .feature-icon {
+      font-size: 32px;
+      margin-bottom: 16px;
+    }
+    .feature-card h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--pink);
+      margin-bottom: 10px;
+    }
+    .feature-card p {
+      font-family: "OCR A Std", monospace;
+      font-size: 16px;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 18px;
+    }
+    .feature-link {
+      text-transform: uppercase;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--purple);
+      text-decoration: none;
+    }
+    .feature-link:hover { text-decoration: underline; }
+
+    /* How it works */
+    .how {
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 80px 24px;
+    }
+    .how-inner { max-width: 800px; margin: 0 auto; }
+    .steps-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-top: 48px;
+    }
+    .step-item {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .step-item:last-child { border-bottom: none; }
+    .step-num {
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      border-radius: 50%;
+      background: rgba(204,96,193,0.15);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--purple);
+    }
+    .step-body h4 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--pink);
+      margin-bottom: 6px;
+    }
+    .step-body p {
+      font-family: "OCR A Std", monospace;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    /* Footer */
+    footer {
+      padding: 40px 48px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    footer p { 
+      font-family: "OCR A Std", monospace;
+      font-weight: 600;
+      font-size: 18px; 
+      color: var(--muted); 
+    }
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+    .footer-links a {
+      font-family: "OCR A Std", monospace;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--muted);
+      text-decoration: none;
+    }
+    .footer-links a:hover { color: var(--pink); }
+
+    @media (max-width: 600px) {
+      nav { padding: 14px 20px; }
+      .nav-links { display: none; }
+      .hero { padding: 60px 20px 40px; }
+      footer { padding: 32px 20px; flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <img src="icon/capybara_black_-removebg-preview.png" alt="Footprint">
+    Footprint
+  </a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="watermark.html">Image Protection</a></li>
+    <li><a href="username.html">Username Check</a></li>
+    <li><a href="hygiene.html">Cyber Hygiene</a></li>
+  </ul>
+  <a href="#" class="nav-cta">Add to Chrome</a>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-eyebrow">🐾 Browser Extension</div>
+  <h1>Browse without leaving a <span>vulnerable</span> footprint.</h1>
+  <p>Footprint aims to provide a safer browsing experience by protecting your privacy and detecting potential threats in real time.</p>
+  <div class="hero-btns">
+    <a href="#" class="btn-primary">Add to Chrome, it's free!</a>
+    <a href="#features" class="btn-secondary">What it does?</a>
+  </div>
+
+  <!-- Recent scans and downloads -->
+  <div class="demo-wrap">
+    <div class="demo-card">
+
+      <div class="activity-section">
+        <a
+          href="scanshistory.html#scanHistorySection"
+          class="demo-label-link"
+        >
+          Recent Scans →
+        </a>
+
+        <div id="recentScans">
+          <p class="demo-empty">Loading recent scans…</p>
+        </div>
+      </div>
+
+      <div class="activity-divider"></div>
+
+      <div class="activity-section">
+        <a
+          href="scanshistory.html#downloadHistorySection"
+          class="demo-label-link"
+        >
+          Recent Downloads →
+        </a>
+
+        <div id="recentDownloads">
+          <p class="demo-empty">Loading recent downloads…</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Footprint Features -->
+<section class="features" id="features">
+  <div class="section-label">What Footprint does</div>
+  <div class="section-title">Four shields. One extension.</div>
+  <div class="features-grid">
+
+    <!-- URL & Site Scanner Dashboard -->
+    <div class="feature-card">
+      <div class="feature-icon">🔍</div>
+      <h3>URL & Site Scanner</h3>
+      <p>
+        Every page you visit is automatically checked against VirusTotal's database and scanned for phishing keywords. 
+        Get an instant risk rating before you type a single password.
+      </p>
+      <a href="scanshistory.html" class="feature-link">View scan history →</a>
+    </div>
+
+    <!-- AI-Resistant Image Protection Dashboard -->
+    <div class="feature-card">
+      <div class="feature-icon">🖼️</div>
+      <h3>AI-Resistant Image Protection</h3>
+      <p>
+        Add a customizable visible watermark, embed hidden ownership information and apply experimental pixel-level perturbations.
+        Footprint helps discourage unauthorized reuse and provides verifiable evidence of image ownership.
+      </p>
+      <a href="watermark.html" class="feature-link">Try the image protection tool →</a>
+    </div>
+
+    <!-- Username Similarity Checker change des ltr -->
+    <div class="feature-card">
+      <div class="feature-icon">👤</div>
+      <h3>Username Similarity Checker</h3>
+      <p>
+        Compare a trusted official username with a suspicious account.
+        Footprint analyses character changes, number substitutions, 
+        separators and look-alike Unicode letters, then provides an explainable impersonation risk score.
+      </p>
+      <a href="username.html" class="feature-link">Check a username →</a>
+    </div>
+
+    <!-- Cyber Hygiene Dashboard -->
+    <div class="feature-card">
+    <div class="feature-icon">🛡️</div>
+    <h3>Cyber Hygiene Dashboard</h3>
+    <p>
+        Review your browsing safety habits using your website scan history. 
+        Footprint calculates an estimated cyber-hygiene score, identifies repeated risky domains and provides personalised recommendations.
+    </p>
+    <a href="hygiene.html" class="feature-link">
+        View cyber hygiene →
+    </a>
+</div>
+
+  </div>
+</section>
+
+<!-- How it works -->
+<section class="how">
+  <div class="how-inner">
+    <div class="section-label">How it works?</div>
+    <div class="section-title">Up and running in 3 steps</div>
+    <div class="steps-list">
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Install the Chrome extension</h4>
+          <p>One click from the Chrome Web Store. No account needed, no data collected.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Browse normally</h4>
+          <p>Footprint runs quietly in the background. The icon turns red if something looks off, green if you're safe.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Use the tools when you need them</h4>
+          <p>Click the extension to watermark images, check usernames, see your full scan history or cyber hygiene score on this dashboard.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <p>© 2025 Footprint · Built by Rivyashiniy Jayaraj · APU FYP</p>
+  <ul class="footer-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="watermark.html">Image Protection</a></li>
+    <li><a href="username.html">Username Check</a></li>
+    <li><a href="hygiene.html">Cyber Hygiene</a></li>
+  </ul>
+</footer>
+
+<script src="index.js"></script>
+
+</body>
+</html>

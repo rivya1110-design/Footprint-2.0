@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <title>Footprint — Username Similarity Checker</title>
+
+  <style>
+    :root {
+      --bg: #1e1220;
+      --bg2: #2a1a2a;
+      --bg3: #3b2a3a;
+      --purple: #cc60c1;
+      --pink: #ffc6f9;
+      --text: #f0d6ee;
+      --muted: #ad84aa;
+      --border: #543052;
+      --safe: #6bffb8;
+      --warning: #ffb347;
+      --danger: #ff6b6b;
+      --elevated: #ff8f70;
+      --info: #a9b8ff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      line-height: 1.6;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    /* Navigation */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 18px 48px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(30, 18, 32, 0.95);
+      backdrop-filter: blur(12px);
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: "Pixelify Sans", monospace;
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--pink);
+      text-decoration: none;
+    }
+    .nav-logo img {
+      width: 80px;
+      image-rendering: pixelated;
+    }
+    .nav-logo:hover {
+      color: var(--purple);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 27px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-family: "OCR A Std", monospace;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .nav-links a:hover,
+    .nav-links .active {
+      color: var(--pink);
+    }
+
+    /* Main Content */
+    main {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 62px 0 80px;
+    }
+    .hero {
+      max-width: 800px;
+      margin: 0 auto 38px;
+      text-align: center;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 12px;
+      padding: 6px 13px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: rgba(204, 96, 193, 0.1);
+      color: var(--purple);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin-bottom: 12px;
+      color: var(--pink);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(38px, 6vw, 65px);
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+    }
+    .hero p {
+      color: var(--muted);
+      font-family: "OCR A Std", monospace;
+      font-size: 16px;
+      font-weight: 500;
+    }
+    .privacy-note {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 18px;
+      color: var(--safe);
+      font-size: 13px;
+      font-weight: 700;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(300px, 390px) minmax(0, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    /* -- Compare Username -- */
+    .panel {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--bg2);
+      padding: 26px;
+    }
+    .panel-title {
+      margin-bottom: 8px;
+      color: var(--pink);
+      font-size: 28px;
+      font-family: 'Space Grotesk', sans-serif;
+      line-height: 1.25;
+    }
+    .panel-description {
+      margin-bottom: 18px;
+      color: var(--muted);
+      font-size: 16px;
+      font-family: "OCR A Std", monospace;
+    }
+    .form-group {
+      margin-bottom: 18px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text);
+      font-size: 20px;
+      font-weight: 800;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .label-help {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 500;
+      font-family: "OCR A Std", monospace;
+    }
+    input,
+    select {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      outline: none;
+      background: var(--bg3);
+      color: var(--text);
+      padding: 13px 14px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      font-family: "OCR A Std", monospace;
+    }
+    input::placeholder {
+      color: #846581;
+    }
+    input:focus,
+    select:focus {
+      border-color: var(--purple);
+      box-shadow: 0 0 0 3px rgba(204, 96, 193, 0.13);
+    }
+    .input-counter {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      text-align: right;
+      font-size: 11px;
+      font-family: "OCR A Std", monospace;
+    }
+
+    /* --- Analysis and Rest Btn --- */
+    .button-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      margin-top: 22px;
+    }
+    .primary-btn,
+    .secondary-btn,
+    .example-btn,
+    .copy-btn {
+      border-radius: 10px;
+      transition: transform 0.15s ease, opacity 0.15s ease, border-color 0.15s ease;
+      font-family: Marker Felt, fantasy;
+      font-size: 21.5px;
+      letter-spacing: 0.08em;
+    }
+    .primary-btn {
+      border: none;
+      background: var(--purple);
+      color: #fff;
+      padding: 13px 18px;
+    }
+    .secondary-btn {
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--pink);
+      padding: 13px 18px;
+    }
+    .primary-btn:hover,
+    .secondary-btn:hover,
+    .copy-btn:hover,
+    .example-btn:hover {
+      transform: translateY(-1px);
+    }
+    .secondary-btn:hover,
+    .copy-btn:hover,
+    .example-btn:hover {
+      border-color: var(--purple);
+    }
+    .primary-btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+      transform: none;
+    }
+
+    /* --- Status to enter text box --- */
+    .status {
+      min-height: 22px;
+      margin-top: 13px;
+      color: var(--muted);
+      font-size: 12px;
+      font-family: "OCR A Std", monospace;
+    }
+    .status.error {
+      color: var(--danger);
+    }
+    .status.success {
+      color: var(--safe);
+    }
+
+    /* --- Example Sample --- */
+    .examples {
+      margin-top: 26px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+    .examples h3 {
+      margin-bottom: 10px;
+      color: var(--text);
+      font-size: 16px;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .example-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .example-btn {
+      border: 1px solid var(--border);
+      background: rgba(204, 96, 193, 0.06);
+      color: var(--muted);
+      padding: 7px 10px;
+      font-size: 13px;
+      font-family: "OCR A Std", monospace;
+    }
+
+    /* -- Note -- */
+    .scope-note {
+      margin-top: 22px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(204, 96, 193, 0.06);
+      padding: 14px;
+      color: var(--muted);
+      font-size: 11.5px;
+      line-height: 1.65;
+      font-family: "OCR A Std", monospace;
+    }
+
+    /* Result Box */
+    .result-shell {
+      min-height: 570px;
+    }
+    .empty-state {
+      min-height: 510px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      color: var(--muted);
+      padding: 26px;
+      font-family: "OCR A Std", monospace;
+    }
+    .empty-icon {
+      margin-bottom: 14px;
+      font-size: 44px;
+    }
+    .empty-state h2 {
+      margin-bottom: 7px;
+      color: var(--pink);
+      font-size: 28px;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    #resultContent[hidden],
+    #emptyState[hidden] {
+      display: none;
+    }
+    .result-header {
+      display: grid;
+      grid-template-columns: 145px minmax(0, 1fr);
+      gap: 22px;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    .score-ring {
+      --score: 0deg;
+      --score-color: var(--safe);
+      width: 136px;
+      height: 136px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at center, var(--bg2) 57%, transparent 59%),
+        conic-gradient(var(--score-color) var(--score), var(--bg3) 0);
+    }
+    .score-inner {
+      text-align: center;
+    }
+    .score-number {
+      display: block;
+      color: var(--pink);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 40px;
+      font-weight: 900;
+      line-height: 1;
+    }
+    .score-label {
+      color: var(--muted);
+      font-family: "OCR A Std", monospace;
+      font-size: 14px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .risk-badge {
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: 10px;
+      border-radius: 999px;
+      padding: 5px 11px;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .risk-low {
+      background: rgba(107, 255, 184, 0.12);
+      color: var(--safe);
+    }
+    .risk-moderate {
+      background: rgba(255, 179, 71, 0.12);
+      color: var(--warning);
+    }
+    .risk-elevated {
+      background: rgba(255, 143, 112, 0.12);
+      color: var(--elevated);
+    }
+    .risk-high {
+      background: rgba(255, 107, 107, 0.12);
+      color: var(--danger);
+    }
+    .result-heading {
+      margin-bottom: 7px;
+      color: var(--pink);
+      font-size: 25px;
+      line-height: 1.25;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .result-summary {
+      color: var(--muted);
+      font-size: 14px;
+      font-family: "OCR A Std", monospace;
+    }
+
+    /* -- Username Comparison -- */
+    .username-comparison {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 13px;
+      align-items: center;
+      margin-bottom: 22px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: var(--bg3);
+      padding: 15px;
+    }
+    .username-box {
+      min-width: 0;
+    }
+    .username-box span {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-family: "OCR A Std", monospace;
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .username-box strong {
+      display: block;
+      overflow-wrap: anywhere;
+      color: var(--text);
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 16px;
+    }
+    .comparison-arrow {
+      color: var(--purple);
+      font-size: 22px;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    /* -- Username Metric -- */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+    .metric {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(59, 42, 58, 0.72);
+      padding: 13px;
+    }
+    .metric span {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-family: "OCR A Std", monospace;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .metric strong {
+      color: var(--pink);
+      font-size: 18px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 500;
+    }
+    .section-card {
+      margin-top: 14px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: rgba(59, 42, 58, 0.48);
+      padding: 17px;
+    }
+    .section-card h3 {
+      margin-bottom: 11px;
+      color: var(--pink);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 18px;
+    }
+    .pattern-list,
+    .recommendation-list {
+      display: grid;
+      gap: 9px;
+      list-style: none;
+    }
+    .pattern-item,
+    .recommendation-item {
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      gap: 9px;
+      align-items: start;
+      color: var(--muted);
+      font-size: 14px;
+      font-family: "OCR A Std", monospace;
+    }
+    .pattern-icon,
+    .recommendation-icon {
+      width: 22px;
+      height: 22px;
+      display: grid;
+      place-items: center;
+      border-radius: 7px;
+      background: rgba(204, 96, 193, 0.12);
+      color: var(--pink);
+      font-size: 14px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 900;
+    }
+    .no-patterns {
+      color: var(--muted);
+      font-size: 14px;
+      font-family: "OCR A Std", monospace;
+    }
+    
+    /* -- Normalization Table -- */
+    .normalization-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 15px;
+    }
+    .normalization-table th,
+    .normalization-table td {
+      padding: 9px 8px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+    .normalization-table th {
+      color: var(--muted);
+      font-weight: 800;
+      font-family: "OCR A Std", monospace;
+    }
+    .normalization-table td {
+      color: var(--text);
+      font-family: Consolas, "Courier New", monospace;
+      overflow-wrap: anywhere;
+    }
+    .normalization-table tr:last-child td {
+      border-bottom: none;
+    }
+    .result-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 16px;
+    }
+
+    /* Copy Btn */
+    .copy-btn {
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--pink);
+      padding: 9px 13px;
+      font-size: 15px;
+      font-family: Marker Felt, fantasy;
+    }
+
+    /* Pattern-based Identity Analysis */
+    .methodology {
+      margin-top: 28px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--bg2);
+      padding: 26px;
+    }
+    .methodology-header {
+      max-width: 680px;
+      margin-bottom: 26px;
+    }
+    .methodology h2 {
+      margin-bottom: 7px;
+      color: var(--pink);
+      font-size: 26px;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .methodology-header p {
+      color: var(--muted);
+      font-size: 14px;
+      font-family: "OCR A Std", monospace;
+    }
+    .method-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .method-card {
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: var(--bg3);
+      padding: 16px;
+    }
+    .method-number {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 11px;
+      border-radius: 9px;
+      background: rgba(204, 96, 193, 0.14);
+      color: var(--purple);
+      font-size: 14px;
+      font-weight: 900;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .method-card h3 {
+      margin-bottom: 6px;
+      color: var(--pink);
+      font-size: 16px;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .method-card p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.65;
+      font-family: "OCR A Std", monospace;
+    }
+
+    /* Footer Section */
+    footer {
+      margin-top: 38px;
+      border-top: 1px solid var(--border);
+      padding-top: 23px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 12px;
+      font-family: "OCR A Std", monospace;
+      font-weight: 600;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 920px) {
+      nav {
+        padding: 16px 20px;
+      }
+      .nav-links {
+        display: none;
+      }
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+      .result-shell {
+        min-height: auto;
+      }
+      .method-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    @media (max-width: 640px) {
+      main {
+        width: min(100% - 24px, 1180px);
+        padding-top: 40px;
+      }
+      .panel,
+      .methodology {
+        padding: 19px;
+      }
+      .result-header {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        text-align: center;
+      }
+      .username-comparison {
+        grid-template-columns: 1fr;
+      }
+      .comparison-arrow {
+        transform: rotate(90deg);
+        text-align: center;
+      }
+      .metrics-grid,
+      .method-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .button-row {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width: 420px) {
+      .metrics-grid,
+      .method-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <nav>
+    <a href="index.html" class="nav-logo">
+      <img src="icon/capybara_black_-removebg-preview.png" alt="Footprint">
+      Footprint
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html#features">Features</a></li>
+      <li><a href="watermark.html">Watermark</a></li>
+      <li><a href="username.html" class="active">Username Check</a></li>
+      <li><a href="index.html">Homepage</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <section class="hero">
+      <div class="eyebrow">👤 Identity impersonation detection</div>
+      <h1>Check before you trust.</h1>
+      <p>
+        Compare an official username with a suspicious username. Footprint analyses
+        character edits, shared prefixes, number substitutions, separators and visually
+        similar Unicode characters to identify possible impersonation patterns.
+      </p>
+      <div class="privacy-note">🔒 Analysis runs locally. Usernames are not uploaded or stored.</div>
+    </section>
+
+    <section class="workspace">
+      <aside class="panel">
+        <h2 class="panel-title">Compare usernames</h2>
+        <p class="panel-description">
+          Enter the known authentic username first, followed by the account you want to check.
+        </p>
+
+        <div class="form-group">
+          <label for="officialUsername">
+            Official username
+            <span class="label-help">The authentic account or username you trust.</span>
+          </label>
+          <input
+            type="text"
+            id="officialUsername"
+            maxlength="64"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="Example: capybara"
+          >
+          <span class="input-counter" id="officialCounter">0 / 64</span>
+        </div>
+
+        <div class="form-group">
+          <label for="suspiciousUsername">
+            Suspicious username
+            <span class="label-help">The similar-looking account you want to assess.</span>
+          </label>
+          <input
+            type="text"
+            id="suspiciousUsername"
+            maxlength="64"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="Example: capyb@ra"
+          >
+          <span class="input-counter" id="suspiciousCounter">0 / 64</span>
+        </div>
+
+        <div class="form-group">
+          <label for="platformInput">
+            Platform <span class="label-help">Optional context for the report.</span>
+          </label>
+          <select id="platformInput">
+            <option value="Not specified">Not specified</option>
+            <option value="Instagram">Instagram</option>
+            <option value="TikTok">TikTok</option>
+            <option value="X / Twitter">X / Twitter</option>
+            <option value="Facebook">Facebook</option>
+            <option value="YouTube">YouTube</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div class="button-row">
+          <button type="button" class="primary-btn" id="analyseBtn">
+            Analyse similarity
+          </button>
+          <button type="button" class="secondary-btn" id="resetBtn">
+            Reset
+          </button>
+        </div>
+
+        <div class="status" id="status" aria-live="polite">
+          Enter two usernames to begin.
+        </div>
+
+        <section class="examples">
+          <h3>Quick test examples</h3>
+          <div class="example-list">
+            <button
+              type="button"
+              class="example-btn"
+              data-official="rivyashiniy"
+              data-suspicious="rivyash1niy"
+            >Number swap</button>
+
+            <button
+              type="button"
+              class="example-btn"
+              data-official="khairulaming"
+              data-suspicious="khairul_aming"
+            >Separator</button>
+
+            <button
+              type="button"
+              class="example-btn"
+              data-official="instagram"
+              data-suspicious="instаgram"
+            >Homograph</button>
+
+            <button
+              type="button"
+              class="example-btn"
+              data-official="officialuser"
+              data-suspicious="randomaccount"
+            >Low similarity</button>
+          </div>
+        </section>
+
+        <div class="scope-note">
+          Footprint provides an early-warning similarity assessment. A high score does not
+          prove that an account is fraudulent, and a low score does not guarantee that it is safe.
+          Always verify profile details and use a trusted communication channel.
+        </div>
+      </aside>
+
+      <section class="panel result-shell">
+        <div class="empty-state" id="emptyState">
+          <div>
+            <div class="empty-icon">🪪</div>
+            <h2>No comparison yet</h2>
+            <p>
+              Enter an official username and a suspicious username to view the similarity
+              score, detected patterns and recommended safety checks.
+            </p>
+          </div>
+        </div>
+
+        <div id="resultContent" hidden>
+          <div class="result-header">
+            <div class="score-ring" id="scoreRing">
+              <div class="score-inner">
+                <span class="score-number" id="scoreNumber">0</span>
+                <span class="score-label">Risk score</span>
+              </div>
+            </div>
+
+            <div>
+              <div class="risk-badge risk-low" id="riskBadge">Low risk</div>
+              <h2 class="result-heading" id="resultHeading">Low resemblance detected</h2>
+              <p class="result-summary" id="resultSummary"></p>
+            </div>
+          </div>
+
+          <div class="username-comparison">
+            <div class="username-box">
+              <span>Official</span>
+              <strong id="officialDisplay"></strong>
+            </div>
+
+            <div class="comparison-arrow">→</div>
+
+            <div class="username-box">
+              <span>Username checked</span>
+              <strong id="suspiciousDisplay"></strong>
+            </div>
+          </div>
+
+          <div class="metrics-grid">
+            <div class="metric">
+              <span>Levenshtein similarity</span>
+              <strong id="levenshteinMetric">0%</strong>
+            </div>
+
+            <div class="metric">
+              <span>Jaro-Winkler</span>
+              <strong id="jaroMetric">0%</strong>
+            </div>
+
+            <div class="metric">
+              <span>Edit distance</span>
+              <strong id="distanceMetric">0</strong>
+            </div>
+
+            <div class="metric">
+              <span>Canonical match</span>
+              <strong id="canonicalMetric">No</strong>
+            </div>
+          </div>
+
+          <section class="section-card">
+            <h3>Detected impersonation patterns</h3>
+            <ul class="pattern-list" id="patternList"></ul>
+          </section>
+
+          <section class="section-card">
+            <h3>How Footprint interpreted the usernames</h3>
+            <table class="normalization-table">
+              <thead>
+                <tr>
+                  <th>Stage</th>
+                  <th>Official</th>
+                  <th>Checked</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Original</td>
+                  <td id="rawOfficial"></td>
+                  <td id="rawSuspicious"></td>
+                </tr>
+                <tr>
+                  <td>Unicode-normalized</td>
+                  <td id="unicodeOfficial"></td>
+                  <td id="unicodeSuspicious"></td>
+                </tr>
+                <tr>
+                  <td>Compact</td>
+                  <td id="compactOfficial"></td>
+                  <td id="compactSuspicious"></td>
+                </tr>
+                <tr>
+                  <td>Canonical</td>
+                  <td id="canonicalOfficial"></td>
+                  <td id="canonicalSuspicious"></td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section class="section-card">
+            <h3>Recommended safety checks</h3>
+            <ul class="recommendation-list" id="recommendationList"></ul>
+          </section>
+
+          <div class="result-actions">
+            <button type="button" class="copy-btn" id="copyBtn">
+              Copy Analysis Summary
+            </button>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <section class="methodology">
+      <div class="methodology-header">
+        <h2>Pattern-based identity analysis</h2>
+        <p>
+          The checker combines multiple lightweight methods instead of relying on a single percentage. 
+          This keeps the feature suitable for a browser extension without using
+          large-scale machine learning.
+        </p>
+      </div>
+
+      <div class="method-grid">
+        <article class="method-card">
+          <div class="method-number">1</div>
+          <h3>Levenshtein distance</h3>
+          <p>
+            Counts the minimum insertions, deletions and substitutions required to transform
+            one username into the other.
+          </p>
+        </article>
+
+        <article class="method-card">
+          <div class="method-number">2</div>
+          <h3>Jaro-Winkler similarity</h3>
+          <p>
+            Measures matching characters and gives extra importance to usernames that share
+            the same beginning.
+          </p>
+        </article>
+
+        <article class="method-card">
+          <div class="method-number">3</div>
+          <h3>Homograph checks</h3>
+          <p>
+            Detects selected Greek and Cyrillic characters that visually resemble ordinary
+            Latin letters.
+          </p>
+        </article>
+
+        <article class="method-card">
+          <div class="method-number">4</div>
+          <h3>Modification patterns</h3>
+          <p>
+            Checks number swaps, separators, repeated characters, prefixes, suffixes and
+            other common impersonation changes.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <footer>
+      Footprint provides risk awareness and does not automatically remove or confirm accounts.
+      <p> © 2025 Footprint · Built by Rivyashiniy Jayaraj · APU FYP</p>
+    </footer>
+  </main>
+
+  <script src="username.js"></script>
+</body>
+</html>
